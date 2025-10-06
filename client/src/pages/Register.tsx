@@ -4,9 +4,9 @@ import api from "../services/api";
 import { toast } from "react-toastify";
 
 const Register = () => {
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("test@test.com");
-  const [password, setPassword] = useState("1234");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -79,7 +79,7 @@ const Register = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 rounded-xl text-white font-semibold transition ${
+          className={`w-full py-3 cursor-pointer rounded-xl text-white font-semibold transition ${
             loading
               ? "bg-[#95D5B2] cursor-not-allowed"
               : "bg-[#2D6A4F] hover:bg-[#1B4332]"
