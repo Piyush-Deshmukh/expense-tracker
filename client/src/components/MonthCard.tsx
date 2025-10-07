@@ -42,13 +42,11 @@ const MonthCard: React.FC<MonthCardProps> = ({
         className="w-full flex flex-col md:flex-row md:justify-between md:items-center cursor-pointer px-5 py-4 bg-gradient-to-r from-[#F0FDF4] to-[#E6F4EA] hover:from-[#DCFCE7] hover:to-[#E2F0E8] transition"
         onClick={() => setOpen(!open)}
       >
-        {/* Month */}
         <span className="text-lg font-semibold text-[#1B4332] mb-2 md:mb-0">
           {month}
         </span>
 
-        {/* Totals */}
-        <div className="flex flex-wrap gap-2 md:gap-4 text-sm">
+        <div className="flex flex-wrap gap-2 md:gap-4 text-sm items-center">
           <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-md font-medium">
             Income: ₹{incomeTotal.toFixed(2)}
           </span>
@@ -73,7 +71,7 @@ const MonthCard: React.FC<MonthCardProps> = ({
       {/* Transactions */}
       {open && (
         <div className="p-4">
-          {/* Desktop Header */}
+          {/* Desktop Table */}
           <div className="hidden md:grid grid-cols-6 gap-3 font-semibold text-gray-700 border-b pb-2 text-sm">
             <div>Type / Category</div>
             <div>Merchant</div>
@@ -83,59 +81,108 @@ const MonthCard: React.FC<MonthCardProps> = ({
             <div className="text-center">Actions</div>
           </div>
 
-          {/* Rows */}
-          {transactions.map((t, idx) => (
-            <div
-              key={t._id}
-              className={`grid grid-cols-1 md:grid-cols-6 gap-3 items-start py-3 text-sm border-b last:border-none ${
-                idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-              }`}
-            >
-              {/* Mobile labels + values */}
-              <div className="md:hidden text-xs text-gray-500">
-                Type / Category
-              </div>
-              <div className="font-medium">
-                {t.type === "expense" ? t.category || "Expense" : t.source || "Income"}
-              </div>
-
-              <div className="md:hidden text-xs text-gray-500">Merchant</div>
-              <div className="text-gray-600">{t.merchant || "-"}</div>
-
-              <div className="md:hidden text-xs text-gray-500">Description</div>
-              <div className="text-gray-500 truncate">{t.description || "-"}</div>
-
-              <div className="md:hidden text-xs text-gray-500">Date</div>
-              <div className="text-gray-500">
-                {new Date(t.date).toLocaleDateString()}
-              </div>
-
-              <div className="md:hidden text-xs text-gray-500">Amount</div>
+          {/* Mobile: Cards */}
+          <div className="space-y-3 md:hidden">
+            {transactions.map((t) => (
               <div
-                className={`font-semibold md:text-right ${
-                  t.type === "expense" ? "text-red-600" : "text-green-600"
+                key={t._id}
+                className="border rounded-lg p-3 bg-gray-50 shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-[#1B4332]">
+                    {t.type === "expense"
+                      ? t.category || "Expense"
+                      : t.source || "Income"}
+                  </span>
+                  <span
+                    className={`font-bold ${
+                      t.type === "expense" ? "text-red-600" : "text-green-600"
+                    }`}
+                  >
+                    {t.type === "expense" ? "-" : "+"}₹{t.amount.toFixed(2)}
+                  </span>
+                </div>
+
+                {t.merchant && (
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Merchant: </span>
+                    {t.merchant}
+                  </p>
+                )}
+                {t.description && (
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Description: </span>
+                    {t.description}
+                  </p>
+                )}
+                <p className="text-sm text-gray-500">
+                  {new Date(t.date).toLocaleDateString()}
+                </p>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-2 mt-2">
+                  <button
+                    onClick={() => onEdit && onEdit(t)}
+                    className="p-1.5 rounded-full hover:bg-blue-50 text-blue-600"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => onDelete && onDelete(t._id)}
+                    className="p-1.5 rounded-full hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Rows */}
+          <div className="hidden md:block">
+            {transactions.map((t, idx) => (
+              <div
+                key={t._id}
+                className={`grid grid-cols-6 gap-3 items-center py-3 text-sm ${
+                  idx % 2 === 0 ? "bg-gray-50" : "bg-white"
                 }`}
               >
-                {t.type === "expense" ? "-" : "+"}₹{t.amount.toFixed(2)}
-              </div>
-
-              <div className="md:hidden text-xs text-gray-500">Actions</div>
-              <div className="flex gap-2 md:justify-center">
-                <button
-                  onClick={() => onEdit && onEdit(t)}
-                  className="p-1.5 rounded-full hover:bg-blue-50 text-blue-600"
+                <div className="font-medium">
+                  {t.type === "expense"
+                    ? t.category || "Expense"
+                    : t.source || "Income"}
+                </div>
+                <div className="text-gray-600">{t.merchant || "-"}</div>
+                <div className="text-gray-500 truncate">
+                  {t.description || "-"}
+                </div>
+                <div className="text-gray-500">
+                  {new Date(t.date).toLocaleDateString()}
+                </div>
+                <div
+                  className={`font-semibold text-right ${
+                    t.type === "expense" ? "text-red-600" : "text-green-600"
+                  }`}
                 >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  onClick={() => onDelete && onDelete(t._id)}
-                  className="p-1.5 rounded-full hover:bg-red-50 text-red-600"
-                >
-                  <Trash2 size={16} />
-                </button>
+                  {t.type === "expense" ? "-" : "+"}₹{t.amount.toFixed(2)}
+                </div>
+                <div className="flex justify-center gap-2">
+                  <button
+                    onClick={() => onEdit && onEdit(t)}
+                    className="p-1.5 rounded-full hover:bg-blue-50 text-blue-600"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => onDelete && onDelete(t._id)}
+                    className="p-1.5 rounded-full hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </div>
